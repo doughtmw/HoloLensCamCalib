@@ -70,8 +70,8 @@ public class MediaCaptureUnity : MonoBehaviour {
         HL1_1408x792,
         HL1_1344x756,
         HL1_896x504,
-        HL2_1504x896,
-        HL2_896_504
+        HL2_2272x1278,
+        HL2_896x504
     }
 
     private enum CaptureStatus {
@@ -164,15 +164,15 @@ public class MediaCaptureUnity : MonoBehaviour {
         else if (HL == 2){
             string deviceId = allGroups[selectedGroupIndex].Id;
             // Look up for all video profiles
-            //IReadOnlyList<MediaCaptureVideoProfile> profiles = MediaCapture.FindAllVideoProfiles(deviceId);
+            IReadOnlyList<MediaCaptureVideoProfile> profileList = MediaCapture.FindAllVideoProfiles(deviceId);
             //MediaCaptureVideoProfile selectedProfile;
-            IReadOnlyList<MediaCaptureVideoProfile> profileList = MediaCapture.FindKnownVideoProfiles(deviceId, KnownVideoProfile.VideoConferencing);
+            //IReadOnlyList<MediaCaptureVideoProfile> profileList = MediaCapture.FindKnownVideoProfiles(deviceId, KnownVideoProfile.VideoConferencing);
 
             // Initialize mediacapture with the source group.
             var settings = new MediaCaptureInitializationSettings {
-                //SourceGroup = allGroups[selectedGroupIndex],
-                VideoDeviceId = deviceId,
-                VideoProfile = profileList[0],
+                SourceGroup = allGroups[selectedGroupIndex],
+                //VideoDeviceId = deviceId,
+                //VideoProfile = profileList[0],
                 // This media capture can share streaming with other apps.
                 SharingMode = MediaCaptureSharingMode.ExclusiveControl,
                 // Only stream video and don't initialize audio capture devices.
@@ -374,11 +374,11 @@ public class MediaCaptureUnity : MonoBehaviour {
                 _targetVideoWidth = 896;
                 _targetVideoHeight = 504;
                 break;
-            case MediaCaptureProfiles.HL2_1504x896:
-                _targetVideoWidth = 1504;
-                _targetVideoHeight = 896;
+            case MediaCaptureProfiles.HL2_2272x1278:
+                _targetVideoWidth = 2272;
+                _targetVideoHeight = 1278;
                 break;
-            case MediaCaptureProfiles.HL2_896_504:
+            case MediaCaptureProfiles.HL2_896x504:
                 _targetVideoWidth = 896;
                 _targetVideoHeight = 504;
                 break;
