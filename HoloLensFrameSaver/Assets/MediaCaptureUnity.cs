@@ -59,10 +59,21 @@ public class MediaCaptureUnity : MonoBehaviour {
     public Material mediaMaterial;
     private Texture2D mediaTexture;
 
-    public int targetVideoWidth, targetVideoHeight;
-    private float targetVideoFrameRate = 60f;
+    public MediaCaptureProfiles mediaCaptureProfiles;
+    private int _targetVideoWidth, _targetVideoHeight;
+    private float _targetVideoFrameRate = 60f;
     public Text calibrationText;
-    
+
+    public enum MediaCaptureProfiles
+    {
+        HL1_1280x720,
+        HL1_1408x792,
+        HL1_1344x756,
+        HL1_896x504,
+        HL2_1504x896,
+        HL2_896_504
+    }
+
     private enum CaptureStatus {
         Clean,
         Initialized,
@@ -94,7 +105,6 @@ public class MediaCaptureUnity : MonoBehaviour {
     private int videoWidth = 0;
     private int videoHeight = 0;
     private int HL = 0;
-
 
 
     private async Task<bool> InitializeMediaCaptureAsync() {
@@ -183,14 +193,16 @@ public class MediaCaptureUnity : MonoBehaviour {
             MediaFrameFormat targetResFormat = null;
             float framerateDiffMin = 60f;
             foreach (var f in mediaFrameSourceVideo.SupportedFormats.OrderBy(x => x.VideoFormat.Width * x.VideoFormat.Height)) {
-                if (f.VideoFormat.Width == targetVideoWidth && f.VideoFormat.Height == targetVideoHeight ) {
+
+                // Check current media frame source resolution versus target resolution
+                if (f.VideoFormat.Width == _targetVideoWidth && f.VideoFormat.Height == _targetVideoHeight ) {
                     if (targetResFormat == null) {
                         targetResFormat = f;
-                        framerateDiffMin = Mathf.Abs(f.FrameRate.Numerator / f.FrameRate.Denominator - targetVideoFrameRate);
+                        framerateDiffMin = Mathf.Abs(f.FrameRate.Numerator / f.FrameRate.Denominator - _targetVideoFrameRate);
                     }
-                    else if (Mathf.Abs(f.FrameRate.Numerator / f.FrameRate.Denominator - targetVideoFrameRate) < framerateDiffMin) {
+                    else if (Mathf.Abs(f.FrameRate.Numerator / f.FrameRate.Denominator - _targetVideoFrameRate) < framerateDiffMin) {
                         targetResFormat = f;
-                        framerateDiffMin = Mathf.Abs(f.FrameRate.Numerator / f.FrameRate.Denominator - targetVideoFrameRate);
+                        framerateDiffMin = Mathf.Abs(f.FrameRate.Numerator / f.FrameRate.Denominator - _targetVideoFrameRate);
                     }
                 }
             }
@@ -341,6 +353,38 @@ public class MediaCaptureUnity : MonoBehaviour {
         Application.targetFrameRate = 60;
         captureStatus = CaptureStatus.Clean; 
         InitializeMediaCaptureAsyncWrapper();
+
+        // Cache values to target width and height from media capture
+        // profiles enum.
+        switch (mediaCaptureProfiles)
+        {
+            case MediaCaptureProfiles.HL1_1280x720:
+                _targetVideoWidth = 1280;
+                _targetVideoHeight = 720;
+                break;
+            case MediaCaptureProfiles.HL1_1408x792:
+                _targetVideoWidth = 1408;
+                _targetVideoHeight = 792;
+                break;
+            case MediaCaptureProfiles.HL1_1344x756:
+                _targetVideoWidth = 1344;
+                _targetVideoHeight = 756;
+                break;
+            case MediaCaptureProfiles.HL1_896x504:
+                _targetVideoWidth = 896;
+                _targetVideoHeight = 504;
+                break;
+            case MediaCaptureProfiles.HL2_1504x896:
+                _targetVideoWidth = 1504;
+                _targetVideoHeight = 896;
+                break;
+            case MediaCaptureProfiles.HL2_896_504:
+                _targetVideoWidth = 896;
+                _targetVideoHeight = 504;
+                break;
+            default:
+                break;
+        }
     }
 
 
